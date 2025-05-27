@@ -1,11 +1,10 @@
-﻿using Silk.NET.Input;
+﻿using System;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
 class	Program
 {
-	private static IWindow			_window;
-	private static IInputContext	_input;
+	private static IWindow		_window;
 
 	private static void	Main()
 	{
@@ -27,14 +26,6 @@ class	Program
 
 	private static void	OnLoad()
 	{
-		_input = _window.CreateInput();
-		for (int i = 0; i < _input.Keyboards.Count; i++)
-			_input.Keyboards[i].KeyDown += KeyDown;
-	}
-
-	private static void	KeyDown(IKeyboard keyboard, Key key, int keyCode)
-	{
-		if (key == Key.Escape)
-			_window.Close();
+		InputManager	inputManager = new InputManager(_window);
 	}
 }
