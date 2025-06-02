@@ -26,6 +26,15 @@ class	Program
 
 	private static void	OnLoad()
 	{
-		InputManager	inputManager = new InputManager(_window);
+		_ = new InputManager(_window);
+
+		MapGeneration	map = new MapGeneration();
+
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 40; x++)
+				Console.Write(Convert.ToChar(MapGeneration.map[y, x]) + " ");
+			Console.WriteLine();
+		}
 	}
 }
