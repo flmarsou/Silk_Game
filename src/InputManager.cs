@@ -2,28 +2,26 @@ using Silk.NET.Windowing;
 using Silk.NET.Input;
 using System.Numerics;
 
-public class	InputManager
+class	InputManager
 {
-	private readonly IWindow		_window;
 	private readonly IInputContext	_input;
 	private readonly IMouse			_mouse;
 
 	public	InputManager(IWindow window)
 	{
-		_window = window;
-		_input = _window.CreateInput();
+		this._input = window.CreateInput();
 
 		// Keyboard
-		for (int i = 0; i < _input.Keyboards.Count; i++)
+		for (int i = 0; i < this._input.Keyboards.Count; i++)
 		{
-			_input.Keyboards[i].KeyDown += KeyDown;
-			_input.Keyboards[i].KeyUp += KeyUp;
+			this._input.Keyboards[i].KeyDown += KeyDown;
+			this._input.Keyboards[i].KeyUp += KeyUp;
 		}
 
 		// Mouse
-		if (_input.Mice.Count > 0)
+		if (this._input.Mice.Count > 0)
 		{
-			_mouse = _input.Mice[0];
+			_mouse = this._input.Mice[0];
 			_mouse.MouseDown += MouseDown;
 			_mouse.MouseUp += MouseUp;
 			_mouse.MouseMove += MouseMove;
