@@ -47,13 +47,20 @@ class	MapGeneration
 			if (!overlaps)
 			{
 				CreateRoom(newRoom);
-				// Create tunnels
-				if (_rooms.Count > 0)
-				{
-					Room	prevRoom = _rooms[_rooms.Count - 1];
-					ConnectRooms(prevRoom.Center(), newRoom.Center());
-				}
 				_rooms.Add(newRoom);
+			}
+		}
+
+		// Generate tunnels
+		for (int i = 0; i < _rooms.Count; i++)
+		{
+			Room	currentRoom = _rooms[i];
+			Room	closestRoom = FindClosestRoom(currentRoom);
+
+			if (closestRoom != null)
+			{
+				ConnectRooms(currentRoom.Center(), closestRoom.Center());
+				_rooms[i].connected = true;
 			}
 		}
 	}
@@ -81,13 +88,19 @@ class	MapGeneration
 
 	static void	CreateHorizontalTunnel(int src, int dest, int y)
 	{
-		for (int x = Math.Min(src, dest); x < Math.Max(src, dest); x++)
+		int	start = Math.Min(src, dest);
+		int	end = Math.Max(src, dest);
+
+		for (int x = start; x <= end; x++)
 			map[y, x] = '#';
 	}
 
 	static void	CreateVerticalTunnel(int src, int dest, int x)
 	{
-		for (int y = Math.Min(src, dest); y < Math.Max(src, dest); y++)
+		int	start = Math.Min(src, dest);
+		int	end = Math.Max(src, dest);
+
+		for (int y = start; y < end; y++)
 			map[y, x] = '#';
 	}
 
@@ -99,8 +112,9 @@ class	MapGeneration
 		public readonly int Y1 = posY;
 		public readonly int X2 = posX + roomWidth;
 		public readonly int Y2 = posY + roomHeight;
+		public bool			connected = false;
 
-		public bool	Overlap(Room other)
+		public bool				Overlap(Room other)
 		{
 
 			return !(this.X2 + _padding <= other.X1
@@ -109,9 +123,44 @@ class	MapGeneration
 					|| this.Y1 - _padding >= other.Y2);
 		}
 
-		public (int x, int y) Center()
+		public (int x, int y)	Center()
 		{
 			return ((X1 + X2) / 2, (Y1 + Y2) / 2);
 		}
+
+		public (int x, int y)	Exit()
+		{
+			int	x = _rng.Next(X1 + 1, X2 - 1);
+			int	y = _rng.Next(Y1 + 1, Y2 - 1);
+
+			return (x, y);
+		}
+	}
+
+	private Room	FindClosestRoom(Room currentRoom)
+	{
+		(int x, int y)	currentCenter = currentRoom.Center();
+		Room			closestRoom = null;
+		double			closestDistance = double.MaxValue;
+
+		for (int i = 0; i < _rooms.Count; i++)
+		{
+			if (_rooms[i] == currentRoom || _rooms[i].connected == true)
+				continue ;
+
+			(int x, int y)	otherCenter = _rooms[i].Center();
+			double			distance = Math.Sqrt(
+				(currentCenter.x - otherCenter.x) * (currentCenter.x - otherCenter.x) +
+				(currentCenter.y - otherCenter.y) * (currentCenter.y - otherCenter.y)
+				);
+
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				closestRoom = _rooms[i];
+			}
+		}
+
+		return (closestRoom);
 	}
 }
