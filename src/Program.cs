@@ -1,4 +1,5 @@
 ﻿using System;
+using Silk.NET.Core;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
@@ -28,12 +29,32 @@ class	Program
 	{
 		_ = new InputManager(_window);
 
-		MapGeneration	map = new MapGeneration();
+		Tile[,] map = Dungeon.GenerateMap();
 
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
-				Console.Write(Convert.ToChar(MapGeneration.map[y, x]) + " ");
+			{
+				switch (map[y, x])
+				{
+					case Tile.Empty:
+						Console.Write('.');
+						break ;
+					case Tile.Floor:
+						Console.Write(' ');
+						break ;
+					case Tile.Wall:
+						Console.Write('#');
+						break ;
+					case Tile.Door:
+						Console.Write('D');
+						break ;
+					default:
+						Console.Write('?');
+						break ;
+				}
+				Console.Write(" ");
+			}
 			Console.WriteLine();
 		}
 	}
